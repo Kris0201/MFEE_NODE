@@ -1,0 +1,6 @@
+可設定 package.json 中的 scripts：
+{"scripts": {
+"start": "nodemon src/http_server01.js"
+}}
+
+在cmd中 輸入 npm run start 即可執行
