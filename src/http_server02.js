@@ -17,6 +17,5 @@ const server = http.createServer((req, res) => {
 
 server.listen(3000);
 
-// 透過server寫一隻.txt或.json, 並將req.header內的資料寫入
+// 透過server寫一隻.txt或.json, 當連上server時產生.txt或.json, 並將req.header內的資料寫入
 // fs.writeFile(file, data[, options], callback)
-
