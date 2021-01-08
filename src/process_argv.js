@@ -8,3 +8,7 @@ console.log(process.argv);
 // 'aaa',
 // 'bbb',
 // '--c'
+
+// process 代表整個 node 執行的行程。
+// process.env 可以取得作業系統的環境變數。
+// process.argv 執行程式時，所下的命令列參數。

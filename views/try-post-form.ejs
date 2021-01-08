@@ -1,0 +1,26 @@
+<%- include('parts/html-head') %>
+<%- include('parts/navbar') %>
+<div class="container">
+<!-- index.js已經定義了action所以不用再寫action -->
+<!-- < email %> 變數有設定就一定要給, 否則會出現ejs的錯誤 -->
+<!-- 或者可用typeof email或locals.email其中一種方法先判定, 如果結果是false則不輸出 -->
+    <form method="post">
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="text" class="form-control" id="email" name="email">
+            <% if (typeof email!=="undefined"){ %>
+            <small class="form-text"><%= email %></small>
+            <% } %>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password">
+            <% if (locals.password){ %>
+            <small class="form-text"><%= password %></small>
+            <% } %>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<%- include('parts/scripts') %>
+<%- include('parts/html-foot') %>

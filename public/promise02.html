@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <script>
+        // reject用於出錯時的回應, 當reject被執行則會走往.catch
+        new Promise((resolve, reject) => {
+            console.log(111);
+            setTimeout(function () {
+                console.log(222);
+                reject('bbbb')
+            }, 500 + Math.random() * 1000)
+            console.log(333);
+        })
+            .then(r => {
+                console.log(r)
+            })
+            .catch(ex => {
+                console.log('ex:', ex)
+            });
+    </script>
+
+
+</body>
+
+</html>

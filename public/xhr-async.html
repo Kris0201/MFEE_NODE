@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button onclick="sendAjax()">send ajax</button>
+<div id="info"></div>
+
+<button>fake button</button>
+<input type="text">
+<script>
+    // https://developer.mozilla.org/zh-TW/docs/Web/API/XMLHttpRequest
+    // 傳統Ajax寫法
+    function sendAjax(){
+        // 1 建立物件
+        const xhr = new XMLHttpRequest();
+
+        // 2 設定事件處理器
+        xhr.onreadystatechange = function(){
+            console.log(xhr.readyState, xhr.status, xhr.statusText);
+        }
+        xhr.onload = function(){
+            document.querySelector('#info').innerHTML = xhr.responseText
+        }
+
+        // 3 設定
+        xhr.open('GET', '/pending', true)
+
+        // 4 發送
+        xhr.send()
+
+    }
+</script>
+</body>
+</html>

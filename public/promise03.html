@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <script>
+        function doSomething() {
+            return new Promise((resolve, reject) => {
+                const rnd = 500 + Math.random() * 1000;
+                setTimeout(function () {
+                    // 測試resolve(rnd)
+                    resolve(rnd)
+
+                    // 測試reject(rnd)
+                    // reject(rnd)
+                }, rnd)
+            });
+        }
+
+        // 經過包裝的promise, 但實際上還是沒有跳脫callbackhell
+        doSomething()
+            .then(r => {
+                console.log(1, r);
+                return doSomething();
+            })
+            .then(r => {
+                console.log(2, r);
+                return doSomething();
+            })
+            .then(r => {
+                console.log(3, r);
+            })
+            .catch(ex => {
+                console.log(ex);
+            });
+    </script>
+
+
+</body>
+
+</html>

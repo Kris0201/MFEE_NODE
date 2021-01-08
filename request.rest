@@ -1,0 +1,17 @@
+GET http://localhost:9527/
+
+
+
+###
+POST http://localhost:9527/try-post
+Content-Type: application/json
+
+{"name":"Poe","age":27}
+
+
+
+###
+POST http://localhost:9527/try-post
+Content-Type: application/x-www-form-urlencoded
+
+name=Poe&age=30
