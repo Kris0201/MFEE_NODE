@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    const ff = async () => {
+        try {
+            await new Promise((resolve, reject) => {
+                console.log(111);
+                setTimeout(function () {
+                    console.log(222);
+                    reject('bbbb')
+                }, 500 + Math.random() * 1000)
+                console.log(333);
+            })
+        } catch (ex){
+            console.log('ex:', ex);
+        }
+
+    }
+
+    ff();
+
+
+    // throw new Error() 宣告錯誤
+    // try {
+    //     throw new Error('errorrrrr---')
+    // } catch(ex){
+    //     console.log(ex);
+    // }
+
+
+</script>
+
+
+</body>
+</html>

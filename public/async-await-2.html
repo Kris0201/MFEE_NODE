@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <script>
+        function doSomething() {
+            return new Promise((resolve, reject) => {
+                const rnd = 500 + Math.random() * 1000;
+                setTimeout(function () {
+                    resolve(rnd)
+                }, rnd)
+            });
+        }
+
+        // try{ async function 出錯即停止 }
+        // catch(error 形式參數){ 如果try出錯要執行 }
+        // finally{ 不管try有沒有錯都要做 }
+        // try{}不要包到async (), 而是包await
+        (async () => {
+            try {
+                for (let i = 1; i < 10; i++) {
+                    console.log(i, await doSomething())
+                }
+            } catch (ex) {
+
+            } finally {
+
+            }
+        })();
+    </script>
+
+
+</body>
+
+</html>

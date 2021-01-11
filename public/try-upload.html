@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form name="form1" style="display: none;">
+        <input type="file" name="avatar" id="" accept="image/*">
+        <input type="hidden" name="aString" value="hiddenString">
+    </form>
+
+    <button onclick="upload_btn.click()">上傳圖片</button>
+    <img id="myImg" src="" alt="">
+
+    <script>
+        const upload_btn = document.querySelector('input[name=avatar]');
+
+        function doUpload() {
+            const fd = new FormData(document.form1);
+
+            fetch('/try-upload', {
+                method: "POST",
+                body: fd
+            })
+                .then(r => r.json())
+                .then(info => {
+                    console.log(info);
+                    if (info.file) {
+                        document.querySelector('#myImg').src = '/img/' + info.file.filename;
+                    }
+                })
+        }
+
+        upload_btn.addEventListener('change', doUpload);
+
+    </script>
+</body>
+
+</html>

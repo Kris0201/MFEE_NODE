@@ -1,40 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+
 <body>
-<script>
-    function doSomething(){
-        return new Promise((resolve, reject)=>{
-            const rnd = 500+Math.random()*1000;
-            setTimeout(function(){
-                resolve(rnd)
-            }, rnd)
-        });
-    }
-
-    async function a(){
-        const r1 = await doSomething()
-        console.log(r1)
-        const r2 = await doSomething()
-        console.log(r2)
-        console.log(await doSomething())
-    }
-
-    a().then(r=>{
-        console.log('end', r)
-    });
-
-    (async ()=> {
-        for(let i=1; i<10; i++){
-            console.log(i, await doSomething())
+    <script>
+        function doSomething() {
+            return new Promise((resolve, reject) => {
+                const rnd = 500 + Math.random() * 1000;
+                setTimeout(function () {
+                    resolve(rnd)
+                }, rnd)
+            });
         }
-    })()
 
-</script>
+        async function a() {
+            const r1 = await doSomething()
+            console.log(r1)
+            const r2 = await doSomething()
+            console.log(r2)
+            console.log(await doSomething())
+        }
+
+        a().then(r => {
+            console.log('end', r)
+        });
+
+        // 匿名函式定義且執行
+        (async () => {
+            for (let i = 1; i < 10; i++) {
+                console.log(i, await doSomething())
+            }
+        })();
+
+
+    </script>
 
 
 </body>
+
 </html>

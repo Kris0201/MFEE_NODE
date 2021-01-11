@@ -2,6 +2,12 @@ require("dotenv").config();
 
 const express = require("express");
 
+// multer處理上傳檔案
+const multer = require("multer");
+// const upload = multer({ dest:'tmp_uploads/'});
+// 自訂上傳js
+const upload = require(__dirname + "/modules/upload-imgs");
+
 const app = express();
 
 // 註冊樣版引擎, 記得在根目錄建立views資料夾, 除了安裝npm ejs套件, vscode也要裝EJS language support
@@ -65,6 +71,24 @@ app.post("/try-post-form", (req, res) => {
 
 app.get("/pending", (req, res) => {
   res.send("傳統Ajax測試");
+});
+
+// 處理上傳檔案, 單個single(), 多個array(), 複雜fields(), 寫法不同
+// 參閱 https://www.npmjs.com/package/multer
+// 利用postman測試, body > form-data > key:avatar
+app.post("/try-upload", upload.single("avatar"), (req, res) => {
+  // req.file 會拿到上傳的資料物件
+  res.json({
+    file: req.file,
+    body: req.body,
+  })
+});
+
+// 處理上傳檔案, 多個array()
+// 利用postman測試, body > form-data > key:photo
+app.post("/try-upload2", upload.array("photo"), (req, res) => {
+  // req.files 會拿到多個上傳的資料物件
+  res.json(req.files);
 });
 
 app.use((req, res) => {
