@@ -17,20 +17,21 @@
             });
         }
 
-        async function a() {
-            const r1 = await doSomething()
-            console.log(r1)
-            const r2 = await doSomething()
-            console.log(r2)
-            console.log(await doSomething())
-        }
+        // async function a() {
+        //     const r1 = await doSomething()
+        //     console.log(r1)
+        //     const r2 = await doSomething()
+        //     console.log(r2)
+        //     console.log(await doSomething())
+        // }
 
-        a().then(r => {
-            console.log('end', r)
-        });
+        // a().then(r => {
+        //     console.log('end', r)
+        // });
 
         // 匿名函式定義且執行
         (async () => {
+            // console.log(3);
             for (let i = 1; i < 10; i++) {
                 console.log(i, await doSomething())
             }

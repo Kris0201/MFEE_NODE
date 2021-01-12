@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form name="form1" style="display: none;">
+        <input type="file" name="photo" id="" accept="image/*" multiple>
+        <!-- <input type="hidden" name="aString" value="hiddenString"> -->
+    </form>
+
+    <button onclick="upload_btn.click()">上傳圖片</button>
+    <div id="imgs">
+        <img src="" alt="">
+
+        <script src="./js/jquery-3.5.1.js"></script>
+        <script>
+            const upload_btn = document.querySelector('input[name=photo]');
+
+
+            function doUpload() {
+                const fd = new FormData(document.form1);
+
+                fetch('/try-upload2', {
+                    method: "POST",
+                    body: fd
+                })
+                    .then(r => r.json())
+                    .then(img_ar => {
+                        console.log(img_ar);
+                        // 清除前一次的(未完 需async awiat)
+                        // let Imgs = document.getElementById("#imgs");
+                        // while (Imgs.firstChild()) {
+                        //     Imgs.removeChild(element.firstChild);
+                        // }
+
+                        // 方法一 原生JS 利用map()處理陣列拿到img字串, 再用join()接起來, 放到innerHTML放到innerHTML
+                        // document.querySelector('#imgs').innerHTML =
+                        //     img_ar.map(el => {
+                        //         return `<img src="/img/${el.filename}">`
+                        //     }).join('');
+
+                        // 方法二 JQ 用選擇器搭配for of迴圈, 利用append()將img放進去
+                        // const imgs = $('#imgs');
+                        // for (let el of img_ar) {
+                        //     const img = $('<img>');
+                        //     img.attr('src', '/img/' + el.filename);
+                        //     imgs.append(img);
+                        // }
+
+                        // 方法三 利用createElement()與setAttribute()
+                        for (let el of img_ar) {
+                            const newImg = document.createElement('img');
+                            newImg.setAttribute('src', `/img/${el.filename}`);
+                            document.querySelector('#imgs').appendChild(newImg);
+                        }
+                    })
+            }
+
+            upload_btn.addEventListener('change', doUpload);
+
+        </script>
+</body>
+
+</html>
