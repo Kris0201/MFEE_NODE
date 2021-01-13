@@ -51,6 +51,12 @@ app.use(
   })
 );
 
+app.use((req, res, next)=>{
+  res.locals.baseUrl = req.baseUrl;
+  res.locals.url = req.url;
+  next();
+});
+
 app.get("/", (req, res) => {
   res.send("yahhhhh");
 });

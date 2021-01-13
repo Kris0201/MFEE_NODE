@@ -1,0 +1,128 @@
+<%- include('../parts/html-head') %>
+    <%- include('../parts/navbar') %>
+        <style>
+            form small.error_msg {
+                color: red;
+            }
+        </style>
+
+        <div class="container">
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-6">
+
+                    <!-- 新增失敗警告/新增成功提示 -->
+                    <div class="alert alert-danger" role="alert" id="info" style="display: none;"></div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">修改通訊錄</h5>
+
+                            <!-- novalidate會使表單的type限制與required均失效 -->
+                            <!-- onsubmit="formCheck();return false;" 在表單送出的時候觸發 -->
+                            <form name="form_insert" novalidate onsubmit="formCheck(); return false;">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" value="<%= name %>"
+                                        required>
+                                    <small class="form-text error_msg" style="display: none;"></small>
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        value="<%= email %>" required>
+                                    <small class="form-text error_msg" style="display: none;"></small>
+                                </div>
+                                <!-- Regular Expression 在html的格式使用pattern="",限制能夠填入的內容格式, pattern="09\d{2}-?\d{3}-?\d{3}" -->
+                                <div class="form-group">
+                                    <label for="mobile">Mobile</label>
+                                    <input type="text" class="form-control" id="mobile" name="mobile"
+                                        value="<%= mobile %>" pattern="09\d{2}-?\d{3}-?\d{3}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">Address</label>
+                                    <textarea class="form-control" name="address" id="address" cols="30" rows="3"
+                                        required><%= address %></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="birthday">Birthday</label>
+                                    <input type="date" class="form-control" id="birthday" name="birthday"
+                                        value="<%= birthday %>" required>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <button type="submit" class="btn btn-primary">修改</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include('../parts/scripts') %>
+            <script>
+                // 檢查表單送出的資料, 確認格式沒問題才會POST出去
+                const info = document.querySelector('#info');
+                const name = document.querySelector('#name');
+                const email = document.querySelector('#email');
+                // email的regtex
+                const email_re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+
+                function formCheck() {
+                    // 預設提示字隱藏, 預設通過檢查
+                    info.style.display = 'none';
+                    let isPass = true;
+
+                    // 重新送出時, 錯誤的提醒必須關閉
+                    // closest()往上一層找
+                    name.style.borderColor = '#ccc';
+                    name.closest('.form-group').querySelector('small').style.display = 'none';
+                    email.style.borderColor = '#ccc';
+                    email.closest('.form-group').querySelector('small').style.display = 'none';
+
+                    if (name.value.length < 2) {
+                        isPass = false;
+                        name.style.borderColor = 'red';
+                        let small = name.closest('.form-group').querySelector('small');
+                        small.innerText = '請輸入正確的名字';
+                        small.style.display = 'block';
+                    }
+                    // 以email_re的內容格式測試email.value是否符合, 結果會是布林值, 判斷如果是不符合才作用, 所以記得加上!
+                    if (!email_re.test(email.value)) {
+                        isPass = false;
+                        email.style.borderColor = 'red';
+                        let small = email.closest('.form-group').querySelector('small');
+                        small.innerText = '請輸入正確的電子信箱';
+                        small.style.display = 'block';
+                    }
+
+                    // 如果檢查沒有問題, 就POST表單的資料
+                    if (isPass) {
+                        // 如果表單有給name就直接指定name即可, 注意如果有多個表單, 須注意索引值指到的表單是否正確
+                        // 或者改用name或id去指定
+                        const fd = new FormData(document.form_insert);
+
+                        fetch('', {
+                            method: 'POST',
+                            body: fd
+                        })
+                            .then(r => r.json())
+                            .then(obj => {
+                                console.log(obj);
+                                if (obj.success) {
+                                    // 修改成功
+                                    info.classList.remove('alert-danger');
+                                    info.classList.add('alert-success');
+                                    info.innerHTML = '修改這筆通訊錄';
+                                } else {
+                                    // 修改失敗
+                                    info.classList.remove('alert-success');
+                                    info.classList.add('alert-danger');
+                                    info.innerHTML = '沒有修改';
+                                }
+                                info.style.display = 'block';
+                            });
+                    }
+                }
+            </script>
+            <%- include('../parts/html-foot') %>
