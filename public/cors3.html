@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <button onclick="sendAjax()">send ajax</button>
+    <div id="info"></div>
+
+    <script>
+        // § 跨來源資源共用（Cross-Origin Resource Sharing (CORS)）是一種使用額外 HTTP 標
+        // 頭令目前瀏覽網站的使用者代理取得存取其他來源（網域）伺服器特定資源權限的機制。
+        // § https://developer.mozilla.org/zh-TW/docs/Web/HTTP/CORS
+        // § 當使用fetch() 或傳統 AJAX 跨源（cross origin）去呼叫 API 時，需要對方主機允許。
+        // § npmjs主頁： https://www.npmjs.com/package/cors
+        // § 安裝：> npm i cors
+        
+        function sendAjax() {
+            // domain相同 埠號不同可以include
+            // ex: http://localhost:5500/public/cors3.html
+            fetch('http://localhost:9527/try-session', {
+                credentials: 'include'
+            })
+                .then(r => r.text())
+                .then(text => {
+                    info.innerHTML = text;
+                });
+        }
+    </script>
+</body>
+
+</html>

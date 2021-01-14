@@ -15,3 +15,24 @@ POST http://localhost:9527/try-post
 Content-Type: application/x-www-form-urlencoded
 
 name=Poe&age=30
+
+
+### JWT 登入測試
+POST http://localhost:9527/login-jwt
+Content-Type: application/json
+
+{"account":"poe","password":123}
+
+#### 驗證 JWT
+POST http://localhost:9527/verify-jwt
+Content-Type: application/json
+
+{"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOjUsImFjY291bnQiOiJwb2UiLCJwYXNzd29yZCI6IjQwYmQwMDE1NjMwODVmYzM1MTY1MzI5ZWExZmY1YzVlY2JkYmJlZWYiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMS0wNlQwMjowODozMC4wMDBaIiwiYXZhdGFyIjpudWxsLCJuaWNrbmFtZSI6bnVsbCwiaWF0IjoxNjEwNjEyMjE4fQ.M3az_2yiK9vSdMvhfn6c-zWYvnv0uODK2M7wGSzdyDc"
+}
+
+#### 驗證 JWT 放在header
+POST http://localhost:9527/verify2-jwt
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOjUsImFjY291bnQiOiJwb2UiLCJwYXNzd29yZCI6IjQwYmQwMDE1NjMwODVmYzM1MTY1MzI5ZWExZmY1YzVlY2JkYmJlZWYiLCJjcmVhdGVkX2F0IjoiMjAyMS0wMS0wNlQwMjowODozMC4wMDBaIiwiYXZhdGFyIjpudWxsLCJuaWNrbmFtZSI6bnVsbCwiaWF0IjoxNjEwNjEyMjE4fQ.M3az_2yiK9vSdMvhfn6c-zWYvnv0uODK2M7wGSzdyDc
+
+{"hereyoucanputsomething":"hello","age": "23"}

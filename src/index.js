@@ -1,3 +1,4 @@
+// 透過模組導入環境設定檔.env
 require("dotenv").config();
 
 const express = require("express");
@@ -5,8 +6,18 @@ const express = require("express");
 const session = require("express-session");
 // 使用express-mysql-session提供的方法
 // https://www.npmjs.com/package/express-mysql-session
-const MysqlStore = require('express-mysql-session')(session);
+const MysqlStore = require("express-mysql-session")(session);
+// cors模組, 處理不同server的請求 https://www.npmjs.com/package/cors
+const cors = require("cors");
 
+// 擷取內容?????
+const axios = require("axios");
+
+// 類似JQ
+const cheerio = require("cheerio");
+
+// jsonwebtoken
+const jwt = require("jsonwebtoken");
 
 // 引用moment-timezone來處理時間格式
 const moment = require("moment-timezone");
@@ -20,8 +31,7 @@ const upload = require(__dirname + "/modules/upload-imgs");
 // 導入資料庫連線的js檔
 const db = require(__dirname + "/modules/db_connect2");
 // 使用SQL的資料庫做sessionStore
-const sessionStore = new MysqlStore({}, db)
-
+const sessionStore = new MysqlStore({}, db);
 
 const app = express();
 
@@ -51,14 +61,44 @@ app.use(
   })
 );
 
-app.use((req, res, next)=>{
+// 白名單的做法
+// const whitelist = ['http://localhost:8080', undefined, 'http://localhost:3000'];
+// const corsOptions = {
+//   credentials: true,
+//   origin: function (origin, cb) {
+//     // console.log("origin:", origin);
+//     if (whitelist.indexOf(origin) !== -1) {
+//       cb(null, true);
+//     } else {
+//       cb(null, false);
+//     }
+//   },
+// };
+
+// 全部允許
+const corsOptions = {
+  credentials: true,
+  origin: function (origin, cb) {
+    // console.log("origin:", origin);
+    cb(null, true);
+  },
+};
+
+// 沒設定直接允許不同server端的請求, 如沒有這段則不同server無法互通資料
+app.use(cors(corsOptions));
+
+// middle well
+app.use((req, res, next) => {
   res.locals.baseUrl = req.baseUrl;
   res.locals.url = req.url;
+  // 把req.session存到res.locals.sess 方便判斷有沒有登入
+  res.locals.sess = req.session;
   next();
 });
 
+// 首頁
 app.get("/", (req, res) => {
-  res.send("yahhhhh");
+  res.render("a", { name: "現在暫時是首頁" });
 });
 
 app.get("/try-ejs", (req, res) => {
@@ -166,7 +206,7 @@ app.get("/try-session", (req, res) => {
   });
 });
 
-// 處理時間格式
+// 測試處理時間格式
 app.get("/try-moment", (req, res) => {
   // const fm = 'YYYY-MM-DD HH:mm:ss'; 符合SQL格式
   // https://momentjs.com/docs/#/displaying/
@@ -212,7 +252,120 @@ app.get("/try-db", async (req, res) => {
   res.json(rows);
 });
 
-app.use('/address-book',require(__dirname+'/routes/address-book'))
+// 通訊錄模組
+app.use("/address-book", require(__dirname + "/routes/address-book"));
+
+// 登入畫面
+app.get("/login", async (req, res) => {
+  res.render("login");
+});
+
+// 接收登入
+app.post("/login", upload.none(), async (req, res) => {
+  const [
+    rows,
+  ] = await db.query(
+    "SELECT * FROM `admins` WHERE `account` = ? AND `password` =  SHA1(?)",
+    [req.body.account, req.body.password]
+  );
+
+  if (rows.length === 1) {
+    req.session.admin = rows[0];
+    res.json({
+      success: true,
+    });
+  } else {
+    res.json({
+      success: false,
+      body: req.body,
+    });
+  }
+});
+
+// 登入建立jsonwebtoken
+// 用request.rest測試
+// https://www.npmjs.com/package/jsonwebtoken
+app.post("/login-jwt", async (req, res) => {
+  const [
+    rows,
+  ] = await db.query(
+    "SELECT * FROM `admins` WHERE `account` = ? AND `password` =  SHA1(?)",
+    [req.body.account, req.body.password]
+  );
+
+  if (rows.length === 1) {
+    // jwt.sign()建立token
+    // const token = jwt.sign(物件, 加密字串);
+    const token = jwt.sign({ ...rows[0] }, process.env.JWT_KEY);
+    res.json({
+      success: true,
+      token,
+    });
+  } else {
+    res.json({
+      success: false,
+      body: req.body,
+    });
+  }
+});
+
+// JWT驗證
+// 用request.rest測試
+app.post('/verify-jwt', async (req, res) => {
+  // jwt.verify()驗證token
+  jwt.verify(req.body.token, process.env.JWT_KEY, (error, payload) => {
+    if (error) {
+      res.json({ error });
+    } else {
+      res.json(payload);
+    }
+  });
+});
+
+// JWT驗證
+// 用request.rest測試
+// 將token放在header
+// https://bitbucket.org/lsd0125/mfee09-nodejs/src/b048607a7de353e58e5e45f12c83763bc0d9184a/public/set_jwt_token.html
+app.post('/verify2-jwt', async (req, res) => {
+  let token = req.get('Authorization');
+  if (token.indexOf('Bearer ') === 0) {
+    token = token.slice(7);
+    jwt.verify(token, process.env.JWT_KEY, (error, payload) => {
+      if (error) {
+        res.json({ error });
+      } else {
+        res.json(payload);
+      }
+    })
+  } else {
+    res.json({ error: 'bad bearer token' });
+  }
+});
+
+// 登出
+app.get("/logout", (req, res) => {
+  delete req.session.admin;
+  res.redirect("/");
+});
+
+// 假的yahoo
+// https://www.npmjs.com/package/axios
+app.get("/fake-yahoo", async (req, res) => {
+  const response = await axios.get("https://tw.yahoo.com/");
+  res.send(response.data);
+});
+
+// 透過cheerio去拿到html內的屬性值, 用法類似JQuery
+// https://www.npmjs.com/package/cheerio
+app.get("/fake-yahoo2", async (req, res) => {
+  const response = await axios.get("https://tw.yahoo.com/");
+  const $ = cheerio.load(response.data);
+
+  $("img").each(function (i, el) {
+    res.write(el.attribs.src + "\n");
+  });
+  res.end("");
+});
 
 // 這個要放最後, 不然會先被讀到
 app.use((req, res) => {
